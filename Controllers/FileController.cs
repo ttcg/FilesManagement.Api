@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MimeTypeMap.List;
 
 namespace FilesManagement.Api.Controllers
 {
@@ -69,8 +70,12 @@ namespace FilesManagement.Api.Controllers
         public async Task<IActionResult> Upload(IFormFile formFile)
         {
             var fileId = Guid.NewGuid();
+            var fileExt = Path.GetExtension(formFile.FileName);
+            var fileName = $"{fileId}{fileExt}";
+            var contentType = MimeTypeMap.List.MimeTypeMap.GetMimeType(fileExt).First(); // the library will always return "application/octet-stream" if type not found
 
-            var fileMetaModel = await _storageClient.UploadAsync(fileId, formFile.FileName, formFile.OpenReadStream());
+
+            var fileMetaModel = await _storageClient.UploadAsync(fileId, fileName, contentType, formFile.OpenReadStream());
 
             // save uploaded file metadata in persisted store for future reference
             await _fileMetaRepository.Add(new Aggregates.FileMeta
@@ -112,8 +117,10 @@ namespace FilesManagement.Api.Controllers
 
             return new FileStreamResult(stream, System.Net.Mime.MediaTypeNames.Application.Octet)
             {
-                FileDownloadName = string.IsNullOrWhiteSpace(name) ? fileMeta.Name : name
+                FileDownloadName = GetFileDownloadName()
             };
+
+            string GetFileDownloadName() => string.IsNullOrWhiteSpace(name) ? fileMeta.Name : name;
         }
     }
 }

@@ -10,9 +10,9 @@ namespace FilesManagement.Api.Clients
 {
     public class GcpStorageClient : IStorageClient
     {
-        private StorageClient _storageClient;
-        private ILogger<GcpStorageClient> _logger;
-        private AppConfig.GcpStorageConfig _gcpStorageConfig;
+        private readonly StorageClient _storageClient;
+        private readonly ILogger<GcpStorageClient> _logger;
+        private readonly AppConfig.GcpStorageConfig _gcpStorageConfig;
 
         public GcpStorageClient(ILogger<GcpStorageClient> logger, AppConfig appConfig)
         {
@@ -22,9 +22,13 @@ namespace FilesManagement.Api.Clients
             _logger = logger;
         }
 
-        public async Task<FileMeta> UploadAsync(Guid fileId, string fileName, Stream stream)
+        public async Task<FileMeta> UploadAsync(Guid fileId, string fileName, string contentType, Stream stream)
         {
-            var file = await _storageClient.UploadObjectAsync(_gcpStorageConfig.BucketName, $"{fileId}/{fileName}", null, stream);
+            // using fileId/filename to store a file in unique folders
+            //var file = await _storageClient.UploadObjectAsync(_gcpStorageConfig.BucketName, $"{fileId}/{fileName}", null, stream);
+
+            // using fileId to store it as a file name on the flat level
+            var file = await _storageClient.UploadObjectAsync(_gcpStorageConfig.BucketName, fileName, contentType, stream);
 
             var fileMeta = new FileMeta
             {

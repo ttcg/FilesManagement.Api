@@ -13,10 +13,11 @@ namespace FilesManagement.Api.Loggings
             le.RemovePropertyIfPresent("RequestId");
             le.RemovePropertyIfPresent("ActionId");
             le.RemovePropertyIfPresent("ActionName");
+            le.RemovePropertyIfPresent("envName");
 
             // add new properties
-            le.AddPropertyIfAbsent(lepf.CreateProperty("MachineName", Environment.MachineName));
-            le.AddPropertyIfAbsent(lepf.CreateProperty("Environment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")));
+            le.AddPropertyIfAbsent(lepf.CreateProperty("machineName", Environment.MachineName));
+            le.AddPropertyIfAbsent(lepf.CreateProperty("environment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")));
         }
     }
 }

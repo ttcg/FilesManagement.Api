@@ -7,7 +7,7 @@ namespace FilesManagement.Api.Clients
 {
     public interface IStorageClient
     {
-        public Task<FileMeta> UploadAsync(Guid fileId, string fileName, Stream stream);
+        public Task<FileMeta> UploadAsync(Guid fileId, string fileName, string contentType, Stream stream);
         public Task<Stream> DownloadAsync(string fileName);
     }
 }
