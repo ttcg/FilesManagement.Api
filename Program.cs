@@ -16,13 +16,15 @@ namespace FilesManagement.Api
         public static void Main(string[] args)
         {
             var config = new ConfigurationBuilder()
-                .AddUserSecrets<AppConfig>()
+                .AddUserSecrets<Program>()
                 .Build();
+
+            var seqSettings =  config.GetSection("SeqSettings").Get<SeqSettings>();
 
             Log.Logger = CreateLogger(new AppConfig.SeqConfig
             {
-                ApiKey = config["SeqSettings:ApiKey"],
-                ServerUrl = config["SeqSettings:ServerUrl"]
+                ApiKey = seqSettings.ApiKey,
+                ServerUrl = seqSettings.ServerUrl
             });
 
             try
@@ -64,14 +66,5 @@ namespace FilesManagement.Api
 
             return serilogLogger;
         }
-
-        //public class AppSecretSettings
-        //{
-        //    public class SeqSettings
-        //    {
-        //        public string ApiKey { get; set; }
-        //        public string ServerUrl { get; set; }
-        //    }
-        //}
     }
 }

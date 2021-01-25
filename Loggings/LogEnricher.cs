@@ -11,9 +11,9 @@ namespace FilesManagement.Api.Loggings
             // remove unused properties
             le.RemovePropertyIfPresent("SourceContext");
             le.RemovePropertyIfPresent("RequestId");
+            le.RemovePropertyIfPresent("ParentId");
             le.RemovePropertyIfPresent("ActionId");
             le.RemovePropertyIfPresent("ActionName");
-            le.RemovePropertyIfPresent("envName");
 
             // add new properties
             le.AddPropertyIfAbsent(lepf.CreateProperty("machineName", Environment.MachineName));
