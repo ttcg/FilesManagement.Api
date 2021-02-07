@@ -1,11 +1,19 @@
 ﻿using Serilog.Core;
 using Serilog.Events;
-using System;
 
 namespace FilesManagement.Api.Loggings
 {
     public class LogEnricher : ILogEventEnricher
     {
+        private string EnvironmentName { get; set; }
+        private string MachineName { get; set; }
+
+        public LogEnricher(string environmentName, string machineName)
+        {
+            EnvironmentName = environmentName;
+            MachineName = machineName;
+        }
+
         public void Enrich(LogEvent le, ILogEventPropertyFactory lepf)
         {
             // remove unused properties
@@ -16,8 +24,8 @@ namespace FilesManagement.Api.Loggings
             le.RemovePropertyIfPresent("ActionName");
 
             // add new properties
-            le.AddPropertyIfAbsent(lepf.CreateProperty("machineName", Environment.MachineName));
-            le.AddPropertyIfAbsent(lepf.CreateProperty("environment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")));
+            le.AddPropertyIfAbsent(lepf.CreateProperty("machineName", MachineName));
+            le.AddPropertyIfAbsent(lepf.CreateProperty("environment", EnvironmentName));
         }
     }
 }

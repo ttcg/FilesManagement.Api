@@ -1,5 +1,6 @@
 ﻿using FilesManagement.Api.Options;
 using Microsoft.Extensions.Options;
+using System;
 
 namespace FilesManagement.Api.Models
 {
@@ -7,6 +8,7 @@ namespace FilesManagement.Api.Models
     {
         public SeqConfig SeqSettings { get; set; }
         public GcpStorageConfig GcpStorageSettings { get; set; }
+        public string EnvironmentName { get; set; }
 
         public AppConfig(IOptions<GcpStorageOption> gcpStorageOption)
         {
@@ -15,6 +17,7 @@ namespace FilesManagement.Api.Models
                 JsonCredential = gcpStorageOption.Value.JsonCredential,
                 BucketName = gcpStorageOption.Value.BucketName
             };
+            EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         }
 
         public class GcpStorageConfig

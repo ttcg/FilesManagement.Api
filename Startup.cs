@@ -1,5 +1,4 @@
 using FilesManagement.Api.Clients;
-using FilesManagement.Api.Models;
 using FilesManagement.Api.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using FilesManagement.Api.Options;
 
 namespace FilesManagement.Api
 {
@@ -24,13 +22,10 @@ namespace FilesManagement.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<GcpStorageOption>(Configuration.GetSection("GcpStorageSettings"));
-
             services.AddControllers();
 
-            services.AddSingleton<IStorageClient,GcpStorageClient>();
+            services.AddSingleton<IStorageClient, GcpStorageClient>();
             services.AddSingleton<IFileMetaRepository, FileMetaRepository>();
-            services.AddSingleton<AppConfig>();
 
             services.AddMvc();
 
@@ -51,7 +46,7 @@ namespace FilesManagement.Api
 
             app.UseSerilogRequestLogging();
 
-            app.UseHttpsRedirection();            
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 

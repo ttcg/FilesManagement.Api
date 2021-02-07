@@ -1,7 +1,9 @@
 using FilesManagement.Api.Loggings;
 using FilesManagement.Api.Models;
+using FilesManagement.Api.Options;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -19,7 +21,7 @@ namespace FilesManagement.Api
                 .AddUserSecrets<Program>()
                 .Build();
 
-            var seqSettings =  config.GetSection("SeqSettings").Get<SeqSettings>();
+            var seqSettings = config.GetSection("SeqSettings").Get<SeqSettings>();
 
             Log.Logger = CreateLogger(new AppConfig.SeqConfig
             {
@@ -48,7 +50,21 @@ namespace FilesManagement.Api
                 .UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder
+                    .ConfigureServices(services =>
+                    {
+                        var config = new ConfigurationBuilder()
+                            .AddUserSecrets<Program>()
+                            .Build();
+
+                        services.Configure<GcpStorageOption>(config.GetSection("GcpStorageSettings"));
+                        services.AddSingleton<AppConfig>();
+                    })
+                    .ConfigureKestrel(options =>
+                    {
+                        options.Limits.MaxRequestBodySize = 21_457_280;
+                    })                    
+                    .UseStartup<Startup>();
                 });
 
         public static Logger CreateLogger(AppConfig.SeqConfig seqConfig)
@@ -56,7 +72,7 @@ namespace FilesManagement.Api
             var serilogLogger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
                 .Enrich.FromLogContext()
-                .Enrich.With(new LogEnricher())
+                .Enrich.With(new LogEnricher(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"), Environment.MachineName))
                 .WriteTo.Seq(seqConfig.ServerUrl, apiKey: seqConfig.ApiKey)
                 .WriteTo.Console()
                 .CreateLogger();
