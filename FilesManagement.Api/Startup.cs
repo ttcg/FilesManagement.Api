@@ -1,5 +1,7 @@
 using FilesManagement.Api.Clients;
 using FilesManagement.Api.Repositories;
+using IdentityModel;
+using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +29,16 @@ namespace FilesManagement.Api
             services.AddSingleton<IStorageClient, GcpStorageClient>();
             services.AddSingleton<IFileMetaRepository, FileMetaRepository>();
 
+            services.AddAuthentication(
+                IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                .AddIdentityServerAuthentication(options =>
+                {
+                    options.Authority = "https://demo.identityserver.io/";
+                    options.ApiName = "api";
+                    options.ApiSecret = "secret";
+                    options.NameClaimType = JwtClaimTypes.Subject;
+                });
+
             services.AddMvc();
 
             services.AddSwaggerGen(c =>
@@ -49,6 +61,8 @@ namespace FilesManagement.Api
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseSwagger();
 

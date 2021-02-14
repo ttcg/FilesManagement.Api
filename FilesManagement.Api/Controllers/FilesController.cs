@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MimeTypeMap.List;
+using FilesManagement.Api.Security;
 
 namespace FilesManagement.Api.Controllers
 {
@@ -39,6 +40,7 @@ namespace FilesManagement.Api.Controllers
             Summary = "Get file metadata",
             Description = "Get file metadata by Id"
         )]
+        [AllowedUser("11")]
         public async Task<ActionResult<FileMetaViewModel>> GetById(Guid id)
         {
             var fileMeta = await _fileMetaRepository.GetById(id);
